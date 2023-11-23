@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -26,7 +27,7 @@ public class TransactionsService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public void createTransaction(TransactionDTO transaction) throws Exception{
+    public Transaction createTransaction(TransactionDTO transaction) throws Exception{
         User sender = this.userService.findUserById(transaction.senderId());
         User receiver = this.userService.findUserById(transaction.receiverID());
 
@@ -38,7 +39,7 @@ public class TransactionsService {
         }
 
         Transaction newTransaction = new Transaction();
-        newTransaction.setValue(transaction.value());
+        newTransaction.setAmount(transaction.value());
         newTransaction.setSender(sender);
         newTransaction.setReceiver(receiver);
         newTransaction.setTimestamp(LocalDateTime.now());
@@ -49,6 +50,8 @@ public class TransactionsService {
         repository.save(newTransaction);
         userService.saveUser(sender);
         userService.saveUser(receiver);
+
+        return newTransaction;
     }
 
     public boolean authorizeTransaction(User sender, BigDecimal value){
@@ -60,5 +63,10 @@ public class TransactionsService {
        }
        else
            return false;
+    }
+
+    public List<Transaction> getAllTransaction(){
+        List<Transaction> resp = repository.findAll();
+        return resp;
     }
 }
