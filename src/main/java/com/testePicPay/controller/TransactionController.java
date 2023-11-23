@@ -28,4 +28,5 @@ public class TransactionController {
     public List<Transaction> getTransactions(){
         return transactionsService.getAllTransaction();
     }
+
 }
